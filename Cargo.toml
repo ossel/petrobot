@@ -1,0 +1,6 @@
+[package]
+name = "petrobot"
+version = "0.1.0"
+authors = ["ossel"]
+
+[dependencies]
