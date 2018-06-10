@@ -1,6 +1,18 @@
 [package]
 name = "petrobot"
 version = "0.1.0"
-authors = ["ossel"]
+authors = ["ossel","alexfict"]
 
 [dependencies]
+rand = "0.4.0"
+telegram-bot = "0.6"
+tokio-core = "0.1"
+futures = "0.1"
+
+[dependencies.hyper]
+version = "0.11"
+optional = true
+
+[dependencies.hyper-tls]
+version = "0.1"
+optional = true
