@@ -8,12 +8,17 @@ use futures::Stream;
 use tokio_core::reactor::Core;
 use telegram_bot::*;
 
+mod tests;
+
 
 fn main() {
     let mut core = Core::new().unwrap();
     let token = env::var("TELEGRAM_BOT_TOKEN").unwrap();
     let api = Api::configure(token).build(core.handle()).unwrap();
-    let chat_id = 0;//TODO
+    // read chat Id from environment
+    let chat_id = env::var("TELEGRAM_BOT_CHAT_ID").unwrap();
+    // cast chat_id into signed integer 64 bit
+    let chat_id = chat_id.parse::<i64>().unwrap();
     let chat = ChatId::new(chat_id);
     api.spawn(chat.text("Wer kümmert sich heute abend um die Enten?"));
 
