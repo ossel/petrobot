@@ -61,13 +61,7 @@ fn main() {
                 println!("<{}>: {}",&message.from.first_name, data);
 
                 if data.starts_with(COMMAND_TODO_LIST) {
-                    let mut todo_string = String::new();
-                    for (i, todo_task) in todo_list.iter().enumerate() {
-                        todo_string.push_str(&format!("{}. ",i));
-                        todo_string.push_str(&todo_task);
-                        todo_string.push_str("\n");
-                    }
-                    api.spawn(chat.text(format!("{}",todo_string)));
+                    api.spawn(chat.text(format!("{}",to_ordered_list_string(todo_list.clone()))));
                 }else if data.starts_with(COMMAND_TODO_DELETE) {
                     api.spawn(chat.text(format!("{} möchte einen TODO löschen. Letzter Eintrag gelöscht.",&message.from.first_name)));
                     todo_list.pop();
@@ -94,13 +88,7 @@ fn main() {
                     && shopping_list.is_empty(){
                     api.spawn(chat.text("Einkaufsliste leer. Tippe '/einkauf <item>' um etwas hinzuzufügen."));
                 }else if data.starts_with(COMMAND_SHOPPING_LIST) || data.starts_with(COMMAND_SHOPPING_LIST_TYPO) {
-                    let mut shopping_list_string = String::new();
-                    for (i, item) in shopping_list.iter().enumerate() {
-                        shopping_list_string.push_str(&format!("{}. ",i));
-                        shopping_list_string.push_str(&item);
-                        shopping_list_string.push_str("\n");
-                    }
-                    api.spawn(chat.text(format!("{}",shopping_list_string)));
+                    api.spawn(chat.text(format!("{}",to_ordered_list_string(shopping_list.clone()))));
                 }else if data.starts_with(COMMAND_SHOPPING_ITEM){
                     let chat_input_string = format!("{}",&data.clone());
                     //let mut split = ;
@@ -122,4 +110,14 @@ fn main() {
     });
 
     core.run(future).unwrap();
+}
+
+fn to_ordered_list_string(list:Vec<String>) -> String{
+    let mut result = String::new();
+    for (i, item) in list.iter().enumerate() {
+        result.push_str(&format!("{}. ",i+1));
+        result.push_str(&item);
+        result.push_str("\n");
+    }
+    result
 }
