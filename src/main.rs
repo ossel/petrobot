@@ -1,6 +1,7 @@
 extern crate futures;
 extern crate telegram_bot;
 extern crate tokio_core;
+extern crate chrono;
 
 use std::env;
 use std::fs::File;
@@ -12,6 +13,7 @@ use std::fs::OpenOptions;
 use futures::Stream;
 use tokio_core::reactor::Core;
 use telegram_bot::*;
+use chrono::prelude::*;
 
 
 mod tests;
@@ -125,8 +127,8 @@ fn main() {
 
     let mut todo_list:Vec<String> = Vec::new();
     let mut shopping_list:Vec<String> = Vec::new();
-    let mut duck_father = String::from("");
-
+    let mut duck_father = String::new();
+    let mut duck_father_claim_time = Local::now().date().pred();
     println!("// Fetch new updates via long poll method...");
     let future = api.stream().for_each(|update| {
 
@@ -153,19 +155,26 @@ fn main() {
                 }else if data.starts_with(COMMAND_DUCK_CHECK){
                     api.spawn(chat.text(format!("{} ist heute für die Enten zuständig.",duck_father)));
                 }else if data.starts_with(COMMAND_DUCK_RESP_CLAIM_M)||data.starts_with(COMMAND_DUCK_RESP_CLAIM_F){
-                    duck_father = message.from.first_name;
-                    let mut mates = read_mates();
-                    let mut points = match mates.get(&duck_father) {
-                        None => 0,
-                        Some(i) => i.duck_points,
-                    };
-                    let m = Mate {
-                        name: duck_father.to_string(),
-                        duck_points: points+1
-                    };
-                    println!("enten punkte {}",m);
-                    mates.insert(m.name.clone(),m);
-                    write_mates(to_csv_string(mates));
+                    let today = Local::now().date();
+                    if today == duck_father_claim_time {
+                        api.spawn(chat.text(format!("{} ist heute bereits für die Enten zuständig. Versuche es morgen erneut.",duck_father)));
+                    }else{
+                        duck_father_claim_time = today;
+                        duck_father = message.from.first_name;
+                        api.spawn(chat.text(String::from("Du bist heute für die Enten zuständig.")));
+                        let mut mates = read_mates();
+                        let mut points = match mates.get(&duck_father) {
+                            None => 0,
+                            Some(i) => i.duck_points,
+                        };
+                        let m = Mate {
+                            name: duck_father.to_string(),
+                            duck_points: points+1
+                        };
+                        mates.insert(m.name.clone(),m);
+                        write_mates(to_csv_string(mates));
+                    }
+
                 }else if data.starts_with(COMMAND_DUCK_POINTS){
                     api.spawn(chat.text(format!("{}",to_ordered_list_string(get_mates()))));
                 }else if data.starts_with(COMMAND_SHOPPING_LIST_DELETE)||data.starts_with(COMMAND_SHOPPING_LIST_DELETE_TYPO){
