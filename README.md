@@ -1,5 +1,5 @@
 # petrobot
-Der PetroBot hilft den Bewohnern der Petronellastraße die Hürden des alltäglichen Lebens zu meistern.
+Der Petro Bot hilft den Bewohnern der Petronellastraße die Hürden des alltäglichen Lebens zu meistern.
 
 ## command list
 |command|description|
@@ -15,3 +15,19 @@ Der PetroBot hilft den Bewohnern der Petronellastraße die Hürden des alltägli
 |`/einkauf`|Fügt den nachfolgenden Text zur Einkaufsliste hinzu.|
 |`/einkaufsliste_loeschen`|Löscht die aktuelle Einkaufsliste.|
 |`/pool`|Gibt die aktuelle Pooltemperatur aus.|
+
+
+## install
+### sources
+sudo apt-get update
+sudo apt-get install git-core
+sudo git clone https://github.com/ossel/petrobot.git
+### rust
+curl https://sh.rustup.rs -sSf | sh
+export PATH="$HOME/.cargo/bin:$PATH"
+### openssl
+sudo apt-get install pkg-config libssl-dev
+### set env vars
+nano /etc/environment
+TELEGRAM_BOT_TOKEN ="<token>"
+TELEGRAM_BOT_CHAT_ID = "<id>"
