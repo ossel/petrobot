@@ -19,15 +19,15 @@ Der Petro Bot hilft den Bewohnern der Petronellastraße die Hürden des alltägl
 
 ## install
 ### sources
-sudo apt-get update
-sudo apt-get install git-core
-sudo git clone https://github.com/ossel/petrobot.git
++ sudo apt-get update
++ sudo apt-get install git-core
++ sudo git clone https://github.com/ossel/petrobot.git
 ### rust
-curl https://sh.rustup.rs -sSf | sh
-export PATH="$HOME/.cargo/bin:$PATH"
++ curl https://sh.rustup.rs -sSf | sh
++ export PATH="$HOME/.cargo/bin:$PATH"
 ### openssl
-sudo apt-get install pkg-config libssl-dev
++ sudo apt-get install pkg-config libssl-dev
 ### set env vars
-nano /etc/environment
-TELEGRAM_BOT_TOKEN ="<token>"
-TELEGRAM_BOT_CHAT_ID = "<id>"
++ nano /etc/environment
++ TELEGRAM_BOT_TOKEN ="<token>"
++ TELEGRAM_BOT_CHAT_ID = "<id>"
