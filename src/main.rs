@@ -6,8 +6,6 @@ extern crate chrono;
 extern crate log4rs;
 
 use std::env;
-use std::fs::File;
-use std::fs;
 
 use futures::Stream;
 use tokio_core::reactor::Core;
@@ -93,11 +91,7 @@ fn main() {
                     api.spawn(chat.text(format!("Letzter Eintrag gelöscht.")));
                     let mut todo_list = dao::read_todo_list();
                     todo_list.pop();
-                    match fs::remove_file("todo-list.csv"){
-                        Ok(_) => info!("todo-list.csv removed."),
-                        Err(_) => info!("Could not remove todo-list.csv"),
-                    };
-                    File::create("todo-list.csv").expect("Could not create file");
+                    dao::delete_todo_list();
                     dao::write_todo_list(todo_list);
                 }else if data.starts_with(COMMAND_TODO){
                     let chat_input_string = format!("{}",&data.clone());

@@ -122,6 +122,14 @@ pub fn write_todo_list(data:Vec<String>){
     write("data/todo-list.csv".to_string(),data)
 }
 
+pub fn delete_todo_list(){
+    match fs::remove_file("todo-list.csv"){
+        Ok(_) => info!("todo-list.csv removed."),
+        Err(_) => info!("Could not remove todo-list.csv"),
+    };
+    File::create("todo-list.csv").expect("Could not create file");
+
+}
 
 fn write(filename: String, data:Vec<String>) {
     let mut content = String::new();
