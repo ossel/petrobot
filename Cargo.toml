@@ -9,6 +9,8 @@ telegram-bot = "0.6"
 tokio-core = "0.1"
 futures = "0.1"
 chrono = "0.4"
+log = "0.4.3"
+env_logger = "0.5.10"
 
 [dependencies.hyper]
 version = "0.11"

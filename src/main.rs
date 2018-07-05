@@ -2,6 +2,8 @@ extern crate futures;
 extern crate telegram_bot;
 extern crate tokio_core;
 extern crate chrono;
+#[macro_use] extern crate log;
+extern crate env_logger;
 
 use std::env;
 use std::fs::File;
@@ -94,8 +96,8 @@ fn write_mates(content: String) {
         .open("roommates.csv")
         .unwrap();
     match file.write_all(content.as_bytes()){
-        Ok(_) => println!("Updated <roommates.csv> : {}", content),
-        Err(_) => println!("Could not write to file <roommates.csv> : {}", content),
+        Ok(_) => info!("Updated <roommates.csv> : {}", content),
+        Err(_) => info!("Could not write to file <roommates.csv> : {}", content),
     };
 }
 
@@ -141,8 +143,8 @@ fn write(filename: String, data:Vec<String>) {
         .open(filename)
         .unwrap();
     match file.write_all(content.as_bytes()){
-        Ok(_) => println!("Updated file: {}", content),
-        Err(_) => println!("Could not write to file: {}", content),
+        Ok(_) => info!("Updated file: {}", content),
+        Err(_) => info!("Could not write to file: {}", content),
     };
 }
 
@@ -157,10 +159,10 @@ fn to_csv_string(mates:HashMap<String,Mate>) -> String{
 
 
 fn main() {
-
+    env_logger::init();
     for (key, value) in env::vars() {
         if key.starts_with("TELEGRAM_BOT"){
-            println!("{}: {}", key, value);
+            info!("{}: {}", key, value);
         }
     }
 
@@ -178,7 +180,7 @@ fn main() {
     let mut duck_father_claim_time = Local::now().date().pred();
 
 
-    println!("// Fetch new updates via long poll method...");
+    info!("// Fetch new updates via long poll method...");
     let future = api.stream().for_each(|update| {
 
         // If the received update contains a new message...
@@ -186,7 +188,7 @@ fn main() {
 
             if let MessageKind::Text {ref data, ..} = message.kind {
 
-                println!("<{}>: {}",&message.from.first_name, data);
+                info!("<{}>: {}",&message.from.first_name, data);
 
                 if data.starts_with(COMMAND_TODO_LIST) {
                     api.spawn(chat.text(format!("{}",to_ordered_list_string(read("todo-list.csv".to_string())))));
@@ -195,8 +197,8 @@ fn main() {
                     let mut todo_list = read("todo-list.csv".to_string());
                     todo_list.pop();
                     match fs::remove_file("todo-list.csv"){
-                        Ok(_) => println!("todo-list.csv removed."),
-                        Err(_) => println!("Could not remove todo-list.csv"),
+                        Ok(_) => info!("todo-list.csv removed."),
+                        Err(_) => info!("Could not remove todo-list.csv"),
                     };
                     File::create("todo-list.csv").expect("Could not create file");
                     write("todo-list.csv".to_string(),todo_list);
@@ -261,7 +263,7 @@ fn main() {
                     shopping_list.push(item.clone());
                     write("shopping-list.csv".to_string(),shopping_list);
                 }else{
-                    println!("Command '{}' unknown.",data);
+                    info!("Command '{}' unknown.",data);
                 }
             }
         }
