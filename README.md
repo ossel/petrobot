@@ -31,3 +31,8 @@ Der Petro Bot hilft den Bewohnern der Petronellastraße die Hürden des alltägl
 + nano /etc/environment
 + TELEGRAM_BOT_TOKEN ="<token>"
 + TELEGRAM_BOT_CHAT_ID = "<id>"
++ RUST_LOG = "info" (optional)
+### auto run
++ printf "cd /root/petrobot/target/debug/\n./petrobot" > run.sh
++ chmod +rwx run.sh
++ crontab -e
