@@ -3,7 +3,7 @@ extern crate telegram_bot;
 extern crate tokio_core;
 extern crate chrono;
 #[macro_use] extern crate log;
-extern crate env_logger;
+extern crate log4rs;
 
 use std::env;
 use std::fs::File;
@@ -17,6 +17,10 @@ use futures::Stream;
 use tokio_core::reactor::Core;
 use telegram_bot::*;
 use chrono::prelude::*;
+use log::LevelFilter;
+use log4rs::append::file::FileAppender;
+use log4rs::encode::pattern::PatternEncoder;
+use log4rs::config::{Appender, Config, Root};
 
 
 mod tests;
@@ -159,7 +163,20 @@ fn to_csv_string(mates:HashMap<String,Mate>) -> String{
 
 
 fn main() {
-    env_logger::init();
+    // init logger
+    let logfile = FileAppender::builder()
+        .encoder(Box::new(PatternEncoder::new("{l} - {m}\n")))
+        .build("log/petrobot.log").expect("Could not create log/petrobot.log file.");
+
+    let config = Config::builder()
+        .appender(Appender::builder().build("logfile", Box::new(logfile)))
+        .build(Root::builder()
+            .appender("logfile")
+            .build(LevelFilter::Debug)).expect("Error building log config.");
+
+    log4rs::init_config(config).expect("log4rs init error");
+
+    //print token and chat id
     for (key, value) in env::vars() {
         if key.starts_with("TELEGRAM_BOT"){
             info!("{}: {}", key, value);
@@ -175,6 +192,8 @@ fn main() {
     let chat_id = chat_id.parse::<i64>().unwrap();
     let chat = ChatId::new(chat_id);
     api.spawn(chat.text("Bin wieder online!"));
+
+    println!("Petrobot started. See log/petrobot.log");
 
     let mut duck_father = String::new();
     let mut duck_father_claim_time = Local::now().date().pred();
